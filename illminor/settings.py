@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-xnt9ui&gb)e0d3l90&q4v8mh+143wsc+b3+ii5_4l5^b3%tz=7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -147,7 +147,7 @@ STATIC_URL = 'static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-AUTHENTICATION_BACKENDS = ['gym.backends.Email_Backend']
+AUTHENTICATION_BACKENDS = ['illminor_App.backends.Email_Backend']
 
 
 # Default primary key field type

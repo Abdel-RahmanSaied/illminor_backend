@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class PatientPermission(permissions.BasePermission):
+class UserPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if view.action == 'list':
             return request.user.is_staff or request.user.is_authenticated

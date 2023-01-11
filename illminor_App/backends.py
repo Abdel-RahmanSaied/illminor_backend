@@ -13,7 +13,7 @@ class Email_Backend(ModelBackend):
                 Q(email__iexact=username)
             )
 
-        except User.DoesNotExist :
+        except User.DoesNotExist:
             return None
 
         else:
@@ -22,8 +22,7 @@ class Email_Backend(ModelBackend):
 
     def get_user(self, user_id):
         try :
-            user = User.objects.get(pk = user_id)
+            user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
-
         return user if self.user_can_authenticate(user) else None
