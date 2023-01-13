@@ -58,7 +58,7 @@ class diabtesTest(models.Model):
     bmi = models.FloatField()
     dpf = models.FloatField()
     age = models.IntegerField()
-    result = models.CharField(max_length=20)
+    result = models.CharField(max_length=20, null=True)
 
     def __str__(self):
         return self.date
@@ -88,7 +88,8 @@ class parkinsonTest(models.Model):
     spread2 = models.FloatField()
     D2 = models.FloatField()
     PPE = models.FloatField()
-    result = models.CharField(max_length=20)
+    date = models.DateField(default=date.today , null=False)
+    result = models.CharField(max_length=20, null=True)
 
     def __str__(self):
         return self.date
@@ -96,7 +97,7 @@ class parkinsonTest(models.Model):
 class alzhimarTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=15, choices=gander_choices)
+    gender = models.IntegerField(max_length=15)
     Age = models.FloatField()
     EDUC = models.FloatField()
     SES = models.FloatField()
@@ -104,15 +105,15 @@ class alzhimarTest(models.Model):
     eTIV = models.FloatField()
     nWBV = models.FloatField()
     ASF = models.FloatField()
-    result = models.CharField(max_length=20)
+    date = models.DateField(default=date.today , null=False)
+    result = models.CharField(max_length=20, null=True)
     def __str__(self):
         return self.date
 class heartTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=15)
     age = models.FloatField()
-    sex = models.CharField(max_length=15, choices=gander_choices)
+    sex = models.IntegerField(max_length=15)
     cp = models.FloatField()
     trestbps = models.FloatField()
     chol = models.FloatField()
@@ -124,6 +125,7 @@ class heartTest(models.Model):
     slope = models.FloatField()
     ca = models.FloatField()
     thal = models.FloatField()
+    date = models.DateField(default=date.today , null=False)
     result = models.CharField(max_length=20, null=True)
     def __str__(self):
         return self.date

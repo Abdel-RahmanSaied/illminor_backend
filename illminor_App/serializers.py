@@ -2,7 +2,10 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import *
 import joblib
-
+import pickle
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 
 
 class USERSSerializer(serializers.ModelSerializer):
@@ -88,10 +91,7 @@ class bloodTestSerializer(serializers.ModelSerializer):
         return result
 
 
-
-
-
-class bloodTestSerializer(serializers.ModelSerializer):
+class diabtesTestSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
         default=serializers.CurrentUserDefault(),
         queryset=User.objects.all(), )
@@ -103,7 +103,6 @@ class bloodTestSerializer(serializers.ModelSerializer):
         return f"{instance.user.first_name} {instance.user.last_name}"
 
     def validate(self, data):
-        age = data.get('age')
         pregnancies = data.get('pregnancies')
         glucose = data.get('glucose')
         bloodpressure = data.get('bloodpressure')
@@ -111,9 +110,7 @@ class bloodTestSerializer(serializers.ModelSerializer):
         insulin = data.get('insulin')
         bmi = data.get('bmi')
         dpf = data.get('dpf')
-
-        if age < 0 or age > 100:
-            raise serializers.ValidationError("Age must be between 0 and 100.")
+        age = data.get('age')
         if pregnancies < 0 or pregnancies > 100:
             raise serializers.ValidationError("pregnancies must be between 0 and 100.")
         if glucose < 0 or glucose > 300:
@@ -128,11 +125,11 @@ class bloodTestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("bmi must be between 0 and 30.")
         if dpf < 0 or dpf > 30:
             raise serializers.ValidationError("dpf must be between 0 and 30.")
-
+        if age < 0 or age > 100:
+            raise serializers.ValidationError("Age must be between 0 and 100.")
         return data
     def predict(self):
         data = self.validated_data
-        age = data.get('age')
         pregnancies = data.get('pregnancies')
         glucose = data.get('glucose')
         bloodpressure = data.get('bloodpressure')
@@ -140,20 +137,305 @@ class bloodTestSerializer(serializers.ModelSerializer):
         insulin = data.get('insulin')
         bmi = data.get('bmi')
         dpf = data.get('dpf')
-        all_data = [age, bmi, pregnancies, glucose, bloodpressure, skinthickness, insulin,dpf,]
+        age = data.get('age')
+        all_data = [pregnancies, glucose, bloodpressure, skinthickness, insulin, bmi, dpf, age,]
 
-        loaded_model = joblib.load(open("ml_models/bloodmodelRBF", 'rb'))
-        clf = loaded_model.predict([all_data])
+        loaded_model=pickle.load(open("ml_models/diabetes-prediction-rfc-model.pkl", "rb"))
+        prediction = loaded_model.predict([all_data])
         result = None
-        if clf[0] == 0:
-            result = "No Cancer"
-        elif clf[0] == 1:
-            result = "Cancer"
-
-        # self.instance.result = result
-
+        if int(prediction[0]) == 1:
+            result = 'diabetic'
+        elif int(prediction[0]) == 0:
+            result = "not diabetic"
         return result
 
+class parkinsonTestSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all(), )
+    patient_name = serializers.SerializerMethodField()
+    class Meta :
+        model = parkinsonTest
+        fields = '__all__'
+    def get_patient_name(self,instance):
+        return f"{instance.user.first_name} {instance.user.last_name}"
+    def validate(self, data):
+        MDVP_Fo_Hz = data.get('MDVP_Fo_Hz')
+        MDVP_Fhi_Hz = data.get('MDVP_Fhi_Hz')
+        MDVP_Flo_Hz = data.get('MDVP_Flo_Hz')
+        MDVP_Jitter = data.get('MDVP_Jitter')
+        MDVP_Jitter_Abs = data.get('MDVP_Jitter_Abs')
+        MDVP_RAP = data.get('MDVP_RAP')
+        MDVP_PPQ = data.get('MDVP_PPQ')
+        Jitter_DDP = data.get('Jitter_DDP')
+        MDVP_Shimmer = data.get('MDVP_Shimmer')
+        MDVP_Shimmer_dB = data.get('MDVP_Shimmer_dB')
+        Shimmer_APQ3 = data.get('Shimmer_APQ3')
+        Shimmer_APQ5 = data.get('Shimmer_APQ5')
+        MDVP_APQ = data.get('MDVP_APQ')
+        Shimmer_DDA = data.get('Shimmer_DDA')
+        NHR = data.get('NHR')
+        HNR = data.get('HNR')
+        RPDE = data.get('RPDE')
+        DFA = data.get('DFA')
+        spread1 = data.get('spread1')
+        spread2 = data.get('spread2')
+        D2 = data.get('D2')
+        PPE = data.get('PPE')
+        if MDVP_Fo_Hz < 0 or MDVP_Fo_Hz > 100:
+            raise serializers.ValidationError("MDVP_Fo_Hz must be between 0 and 100.")
+        if MDVP_Fhi_Hz < 0 or MDVP_Fhi_Hz > 300:
+            raise serializers.ValidationError("MDVP_Fhi_Hz must be between 0 and 300.")
+        if MDVP_Flo_Hz < 0 or MDVP_Flo_Hz > 20:
+            raise serializers.ValidationError("MDVP_Flo_Hz must be between 0 and 20.")
+        if MDVP_Jitter < 0 or MDVP_Jitter > 10:
+            raise serializers.ValidationError("MDVP_Jitter must be between 0 and 10.")
+        if MDVP_Jitter_Abs < 0 or MDVP_Jitter_Abs > 30:
+            raise serializers.ValidationError("MDVP_Jitter_Abs must be between 0 and 30.")
+        if MDVP_RAP < 0 or MDVP_RAP > 30:
+            raise serializers.ValidationError("MDVP_RAP must be between 0 and 30.")
+        if MDVP_PPQ < 0 or MDVP_PPQ > 30:
+            raise serializers.ValidationError("MDVP_PPQ must be between 0 and 30.")
+        if Jitter_DDP < 0 or Jitter_DDP > 30:
+            raise serializers.ValidationError("Jitter_DDP must be between 0 and 30.")
+        if MDVP_Shimmer < 0 or MDVP_Shimmer > 30:
+            raise serializers.ValidationError("MDVP_Shimmer must be between 0 and 30.")
+
+        if MDVP_Shimmer_dB < 0 or MDVP_Shimmer_dB > 30:
+            raise serializers.ValidationError("MDVP_Shimmer_dB must be between 0 and 30.")
+
+        if Shimmer_APQ3 < 0 or Shimmer_APQ3 > 30:
+            raise serializers.ValidationError("Shimmer_APQ3 must be between 0 and 30.")
+
+        if Shimmer_APQ5 < 0 or Shimmer_APQ5 > 30:
+            raise serializers.ValidationError("Shimmer_APQ5 must be between 0 and 30.")
+
+        if MDVP_APQ < 0 or MDVP_APQ > 30:
+            raise serializers.ValidationError("Shimmer_APQ5 must be between 0 and 30.")
+
+        if Shimmer_DDA < 0 or Shimmer_DDA > 30:
+            raise serializers.ValidationError("Shimmer_APQ5 must be between 0 and 30.")
+
+        if NHR < 0 or NHR > 30:
+            raise serializers.ValidationError("NHR must be between 0 and 30.")
+
+        if HNR < 0 or HNR > 30:
+            raise serializers.ValidationError("HNR must be between 0 and 30.")
+
+        if RPDE < 0 or RPDE > 30:
+            raise serializers.ValidationError("RPDE must be between 0 and 30.")
+
+        if DFA < 0 or DFA > 30:
+            raise serializers.ValidationError("HNR must be between 0 and 30.")
+
+        if spread1 < 0 or spread1 > 30:
+            raise serializers.ValidationError("spread1 must be between 0 and 30.")
+
+        if spread2 < 0 or spread2 > 30:
+            raise serializers.ValidationError("spread2 must be between 0 and 30.")
+
+        if D2 < 0 or D2 > 30:
+            raise serializers.ValidationError("spread2 must be between 0 and 30.")
+
+        if PPE < 0 or PPE > 30:
+            raise serializers.ValidationError("spread2 must be between 0 and 30.")
+        return data
+    def predict(self):
+        data = self.validated_data
+        MDVP_Fo_Hz = data.get('MDVP_Fo_Hz')
+        MDVP_Fhi_Hz = data.get('MDVP_Fhi_Hz')
+        MDVP_Flo_Hz = data.get('MDVP_Flo_Hz')
+        MDVP_Jitter = data.get('MDVP_Jitter')
+        MDVP_Jitter_Abs = data.get('MDVP_Jitter_Abs')
+        MDVP_RAP = data.get('MDVP_RAP')
+        MDVP_PPQ = data.get('MDVP_PPQ')
+        Jitter_DDP = data.get('Jitter_DDP')
+        MDVP_Shimmer = data.get('MDVP_Shimmer')
+        MDVP_Shimmer_dB = data.get('MDVP_Shimmer_dB')
+        Shimmer_APQ3 = data.get('Shimmer_APQ3')
+        Shimmer_APQ5 = data.get('Shimmer_APQ5')
+        MDVP_APQ = data.get('MDVP_APQ')
+        Shimmer_DDA = data.get('Shimmer_DDA')
+        NHR = data.get('NHR')
+        HNR = data.get('HNR')
+        RPDE = data.get('RPDE')
+        DFA = data.get('DFA')
+        spread1 = data.get('spread1')
+        spread2 = data.get('spread2')
+        D2 = data.get('D2')
+        PPE = data.get('PPE')
+        all_data = [MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter, MDVP_Jitter_Abs, MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer,
+                    MDVP_Shimmer_dB, Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
+        loaded_model=joblib.load(open("ml_models/Predict_Parkinson.model", "rb"))
+        # loaded_model=joblib.load("ml_models/Predict_Parkinson.model")
+
+        prediction = loaded_model.predict([all_data])
+        result = None
+        if prediction == 0:
+            result = "Uninfected"
+        else:
+            result = "infected"
+        return result
+
+class alzhimarTestSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all(), )
+    patient_name = serializers.SerializerMethodField()
+    class Meta :
+        model = alzhimarTest
+        fields = '__all__'
+    def get_patient_name(self,instance):
+        return f"{instance.user.first_name} {instance.user.last_name}"
+
+    def validate(self, data):
+        gender = data.get('gender')
+        Age = data.get('Age')
+        EDUC = data.get('EDUC')
+        SES = data.get('SES')
+        MMSE = data.get('MMSE')
+        eTIV = data.get('eTIV')
+        nWBV = data.get('nWBV')
+        ASF = data.get('ASF')
+        if gender < 0 or gender > 1:
+            raise serializers.ValidationError("gender must be between 0 and 1.")
+        if Age < 0 or Age > 100:
+            raise serializers.ValidationError("Age must be between 0 and 100.")
+        if EDUC < 0 or EDUC > 20:
+            raise serializers.ValidationError("EDUC must be between 0 and 20.")
+        if SES < 0 or SES > 100:
+            raise serializers.ValidationError("SES must be between 0 and 10.")
+        if MMSE < 0 or MMSE > 30:
+            raise serializers.ValidationError("MMSE must be between 0 and 30.")
+        if eTIV < 0 or eTIV > 30:
+            raise serializers.ValidationError("eTIV must be between 0 and 30.")
+        if nWBV < 0 or nWBV > 30:
+            raise serializers.ValidationError("nWBV must be between 0 and 30.")
+        if ASF < 0 or ASF > 100:
+            raise serializers.ValidationError("ASF must be between 0 and 100.")
+        return data
+    def predict(self):
+        data = self.validated_data
+        gender = data.get('gender')
+        age = data.get('Age')
+        EDUC = data.get('EDUC')
+        SES = data.get('SES')
+        MMSE = data.get('MMSE')
+        eTIV = data.get('eTIV')
+        nWBV = data.get('nWBV')
+        ASF = data.get('ASF')
+        all_data = [gender, age, EDUC, SES, MMSE, eTIV, nWBV, ASF]
+        scaler = pickle.load(open("ml_models/alzheimer.scl", "rb"))
+        loaded_model = pickle.load(open(r"ml_models/alzheimer.model", "rb"))
+        scaled_feature = scaler.transform([all_data])
+        prediction = loaded_model.predict(scaled_feature)
+        result = None
+        if (prediction == 0):
+            result = "Nondemented"
+        elif (prediction == 1):
+            result = "Demented"
+        return result
+
+class heartTestSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all(), )
+    patient_name = serializers.SerializerMethodField()
+    class Meta :
+        model = heartTest
+        fields = '__all__'
+    def get_patient_name(self,instance):
+        return f"{instance.user.first_name} {instance.user.last_name}"
+
+    # def validate(self, data):
+    #     age = data.get('age')
+    #     sex = data.get('sex')
+    #     cp = data.get('cp')
+    #     trestbps = data.get('trestbps')
+    #     chol = data.get('chol')
+    #     fbs = data.get('fbs')
+    #     restecg = data.get('restecg')
+    #     thalach = data.get('thalach')
+    #     exang = data.get('exang')
+    #     oldpeak = data.get('oldpeak')
+    #     slope = data.get('slope')
+    #     ca = data.get('ca')
+    #     thal = data.get('thal')
+    #     if age < 0 or age > 100:
+    #         raise serializers.ValidationError("age must be between 0 and 1.")
+    #     if Age < 0 or Age > 100:
+    #         raise serializers.ValidationError("Age must be between 0 and 100.")
+    #     if EDUC < 0 or EDUC > 20:
+    #         raise serializers.ValidationError("EDUC must be between 0 and 20.")
+    #     if SES < 0 or SES > 100:
+    #         raise serializers.ValidationError("SES must be between 0 and 10.")
+    #     if MMSE < 0 or MMSE > 30:
+    #         raise serializers.ValidationError("MMSE must be between 0 and 30.")
+    #     if eTIV < 0 or eTIV > 30:
+    #         raise serializers.ValidationError("eTIV must be between 0 and 30.")
+    #     if nWBV < 0 or nWBV > 30:
+    #         raise serializers.ValidationError("nWBV must be between 0 and 30.")
+    #     if ASF < 0 or ASF > 100:
+    #         raise serializers.ValidationError("ASF must be between 0 and 100.")
+    #     return data
+    def predict(self):
+        data = self.validated_data
+
+        df = pd.read_csv(r'ml_models/Heart_train (1).csv')
+        df["sex"] = df["sex"].map({"female": 1, "male": 0})
+        df_date = df.values
+        X = df_date[:, :-1]
+        Y = df_date[:, -1:]
+        value = ''
 
 
+        age = data.get('age')
+        sex = data.get('sex')
+        cp = data.get('cp')
+        trestbps = data.get('trestbps')
+        chol = data.get('chol')
+        fbs = data.get('fbs')
+        restecg = data.get('restecg')
+        thalach = data.get('thalach')
+        exang = data.get('exang')
+        oldpeak = data.get('oldpeak')
+        slope = data.get('slope')
+        ca = data.get('ca')
+        thal = data.get('thal')
+        all_data = [age, sex, cp, trestbps, chol, fbs,
+                    restecg, thalach, exang, oldpeak, slope, ca, thal]
+        loaded_model = pickle.load(open(r"ml_models/alzheimer.model", "rb"))
+        user_data = np.array(
+            (age,
+             sex,
+             cp,
+             trestbps,
+             chol,
+             fbs,
+             restecg,
+             thalach,
+             exang,
+             oldpeak,
+             slope,
+             ca,
+             thal)
+        ).reshape(1, 13)
+
+        rf = RandomForestClassifier(
+            n_estimators=16,
+            criterion='entropy',
+            max_depth=9
+        )
+
+        rf.fit(np.nan_to_num(X), Y)
+        rf.score(np.nan_to_num(X), Y)
+        predictions = rf.predict(user_data)
+
+        result = None
+        if int(predictions[0]) == 1:
+            result = 'Have a heart attack'
+        elif int(predictions[0]) == 0:
+            result = "don't have a heart attack"
+
+        return result
 
