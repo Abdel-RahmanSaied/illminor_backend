@@ -53,7 +53,6 @@ class USERS_viewSets(viewsets.ModelViewSet):
     permission_classes = [UserPermission,]
     queryset = USERS.objects.all()
     serializer_class = USERSSerializer
-    # http_method_names = ['post']
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     pagination_class = StandardResultsSetPagination
     search_fields = ['user__username', 'user__first_name', 'user__last_name', 'name', 'user__email', 'phone_number', ]
@@ -215,25 +214,3 @@ class heartTest_ViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         return super().update(request, *args, **kwargs)
 
-
-
-
-#
-# class bloodTest_ViewSet(viewsets.ModelViewSet):
-#     permission_classes = [IsAuthenticated]
-#     queryset = bloodTest.objects.all()
-#     serializer_class = bloodTestSerializer
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         if serializer.is_valid() :
-#             result = serializer.predict()
-#             serializer.save(result=result)
-#             return Response({"response": result}, status=status.HTTP_201_CREATED)
-#         else:
-#             return Response({"response": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-#
-#     def update(self, request, *args, **kwargs):
-#         kwargs['partial'] = True
-#         return super().update(request, *args, **kwargs)
-#
-#

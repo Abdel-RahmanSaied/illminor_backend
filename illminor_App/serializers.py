@@ -6,6 +6,7 @@ import pickle
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from django.db.models import Q
 
 
 class USERSSerializer(serializers.ModelSerializer):
@@ -438,4 +439,5 @@ class heartTestSerializer(serializers.ModelSerializer):
             result = "don't have a heart attack"
 
         return result
+
 
