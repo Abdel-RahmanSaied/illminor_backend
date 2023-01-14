@@ -113,7 +113,7 @@ class heartTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     age = models.FloatField()
-    sex = models.IntegerField(max_length=15)
+    sex = models.IntegerField()
     cp = models.FloatField()
     trestbps = models.FloatField()
     chol = models.FloatField()
