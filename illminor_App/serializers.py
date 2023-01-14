@@ -441,7 +441,7 @@ class heartTestSerializer(serializers.ModelSerializer):
 
         all_data = [Age, Sex, ChestPainType, Cholesterol, FastingBS, MaxHR,
                     ExerciseAngina, Oldpeak, ST_Slope]
-        loaded_model = joblib.load(r"ml_models/HeartAttack_model.pkl")
+        loaded_model = joblib.load("ml_models/HeartAttack_model.pkl")
         result = loaded_model.predict([all_data])
         if int(result[0]) == 1:
             result = 'Have a heart attack'
