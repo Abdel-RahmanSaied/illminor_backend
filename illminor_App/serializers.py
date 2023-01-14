@@ -126,7 +126,7 @@ class bloodTestSerializer(serializers.ModelSerializer):
         mcp = data.get('mcp')
         all_data = [age, bmi, glucouse, insuline, homa, leptin, adiponcetin, resistiin, mcp]
 
-        loaded_model = joblib.load(open("/illminor_backend/ml_models/bloodmodelRBF", 'rb'))
+        loaded_model = joblib.load(open("ml_models/bloodmodelRBF", 'rb'))
         clf = loaded_model.predict([all_data])
         result = None
         if clf[0] == 0:
@@ -188,7 +188,7 @@ class diabtesTestSerializer(serializers.ModelSerializer):
         age = data.get('age')
         all_data = [pregnancies, glucose, bloodpressure, skinthickness, insulin, bmi, dpf, age,]
 
-        loaded_model=pickle.load(open("/illminor_backend/ml_models/diabetes-prediction-rfc-model.pkl", "rb"))
+        loaded_model=pickle.load(open("ml_models/diabetes-prediction-rfc-model.pkl", "rb"))
         prediction = loaded_model.predict([all_data])
         result = None
         if int(prediction[0]) == 1:
@@ -314,7 +314,7 @@ class parkinsonTestSerializer(serializers.ModelSerializer):
         PPE = data.get('PPE')
         all_data = [MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter, MDVP_Jitter_Abs, MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer,
                     MDVP_Shimmer_dB, Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
-        loaded_model=joblib.load(open("/illminor_backend/ml_models/Predict_Parkinson.model", "rb"))
+        loaded_model=joblib.load(open("ml_models/Predict_Parkinson.model", "rb"))
         # loaded_model=joblib.load("ml_models/Predict_Parkinson.model")
 
         prediction = loaded_model.predict([all_data])
@@ -373,8 +373,8 @@ class alzhimarTestSerializer(serializers.ModelSerializer):
         nWBV = data.get('nWBV')
         ASF = data.get('ASF')
         all_data = [gender, age, EDUC, SES, MMSE, eTIV, nWBV, ASF]
-        scaler = pickle.load(open("/illminor_backend/ml_models/alzheimer.scl", "rb"))
-        loaded_model = pickle.load(open(r"/illminor_backend/ml_models/alzheimer.model", "rb"))
+        scaler = pickle.load(open("ml_models/alzheimer.scl", "rb"))
+        loaded_model = pickle.load(open(r"ml_models/alzheimer.model", "rb"))
         scaled_feature = scaler.transform([all_data])
         prediction = loaded_model.predict(scaled_feature)
         result = None
@@ -442,7 +442,7 @@ class heartTestSerializer(serializers.ModelSerializer):
 
         all_data = [Age, Sex, ChestPainType, Cholesterol, FastingBS, MaxHR,
                     ExerciseAngina, Oldpeak, ST_Slope]
-        loaded_model = joblib.load("/illminor_backend/ml_models/HeartAttack_model.pkl")
+        loaded_model = joblib.load("ml_models/HeartAttack_model.pkl")
         result = loaded_model.predict([all_data])
         if int(result[0]) == 1:
             result = 'Have a heart attack'
