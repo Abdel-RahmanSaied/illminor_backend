@@ -3,16 +3,23 @@ from django.contrib.auth.models import User
 from .models import *
 import joblib
 import pickle
-import pandas as pd
-import numpy as np
+# import pandas as pd
+# import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from django.db.models import Q
+from rest_framework.response import Response
+
 
 
 class USERSSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     user_id = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
+    bloodTest_model = serializers.SerializerMethodField()
+    diabtesTest_model = serializers.SerializerMethodField()
+    parkinsonTest_model = serializers.SerializerMethodField()
+    alzhimarTest_model = serializers.SerializerMethodField()
+    heartTest_model = serializers.SerializerMethodField()
     class Meta :
         model = USERS
         fields = '__all__'
@@ -22,6 +29,45 @@ class USERSSerializer(serializers.ModelSerializer):
         return instance.user.id
     def get_email(self, instance):
         return instance.user.email
+    def get_bloodTest_model(self,instance):
+        user_id = instance.user
+        try :
+            query_set = bloodTest.objects.get(user=user_id).result
+        except :
+            return None
+        return str(query_set)
+
+    def get_diabtesTest_model(self,instance):
+        user_id = instance.user
+        try :
+            query_set = diabtesTest.objects.get(user=user_id).result
+        except :
+            return None
+        return str(query_set)
+
+    def get_parkinsonTest_model(self,instance):
+        user_id = instance.user
+        try :
+            query_set = parkinsonTest.objects.get(user=user_id).result
+        except :
+            return None
+        return str(query_set)
+
+    def get_alzhimarTest_model(self,instance):
+        user_id = instance.user
+        try :
+            query_set = alzhimarTest.objects.get(user=user_id).result
+        except :
+            return None
+        return str(query_set)
+
+    def get_heartTest_model(self,instance):
+        user_id = instance.user
+        try :
+            query_set = heartTest.objects.get(user=user_id).result
+        except :
+            return None
+        return str(query_set)
 
 
 class bloodTestSerializer(serializers.ModelSerializer):
@@ -337,107 +383,107 @@ class alzhimarTestSerializer(serializers.ModelSerializer):
             result = "Demented"
         return result
 
-class heartTestSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(
-        default=serializers.CurrentUserDefault(),
-        queryset=User.objects.all(), )
-    patient_name = serializers.SerializerMethodField()
-    class Meta :
-        model = heartTest
-        fields = '__all__'
-    def get_patient_name(self,instance):
-        return f"{instance.user.first_name} {instance.user.last_name}"
-
-    # def validate(self, data):
-    #     age = data.get('age')
-    #     sex = data.get('sex')
-    #     cp = data.get('cp')
-    #     trestbps = data.get('trestbps')
-    #     chol = data.get('chol')
-    #     fbs = data.get('fbs')
-    #     restecg = data.get('restecg')
-    #     thalach = data.get('thalach')
-    #     exang = data.get('exang')
-    #     oldpeak = data.get('oldpeak')
-    #     slope = data.get('slope')
-    #     ca = data.get('ca')
-    #     thal = data.get('thal')
-    #     if age < 0 or age > 100:
-    #         raise serializers.ValidationError("age must be between 0 and 1.")
-    #     if Age < 0 or Age > 100:
-    #         raise serializers.ValidationError("Age must be between 0 and 100.")
-    #     if EDUC < 0 or EDUC > 20:
-    #         raise serializers.ValidationError("EDUC must be between 0 and 20.")
-    #     if SES < 0 or SES > 100:
-    #         raise serializers.ValidationError("SES must be between 0 and 10.")
-    #     if MMSE < 0 or MMSE > 30:
-    #         raise serializers.ValidationError("MMSE must be between 0 and 30.")
-    #     if eTIV < 0 or eTIV > 30:
-    #         raise serializers.ValidationError("eTIV must be between 0 and 30.")
-    #     if nWBV < 0 or nWBV > 30:
-    #         raise serializers.ValidationError("nWBV must be between 0 and 30.")
-    #     if ASF < 0 or ASF > 100:
-    #         raise serializers.ValidationError("ASF must be between 0 and 100.")
-    #     return data
-    def predict(self):
-        data = self.validated_data
-
-        df = pd.read_csv(r'ml_models/Heart_train (1).csv')
-        df["sex"] = df["sex"].map({"female": 1, "male": 0})
-        df_date = df.values
-        X = df_date[:, :-1]
-        Y = df_date[:, -1:]
-        value = ''
-
-
-        age = data.get('age')
-        sex = data.get('sex')
-        cp = data.get('cp')
-        trestbps = data.get('trestbps')
-        chol = data.get('chol')
-        fbs = data.get('fbs')
-        restecg = data.get('restecg')
-        thalach = data.get('thalach')
-        exang = data.get('exang')
-        oldpeak = data.get('oldpeak')
-        slope = data.get('slope')
-        ca = data.get('ca')
-        thal = data.get('thal')
-        all_data = [age, sex, cp, trestbps, chol, fbs,
-                    restecg, thalach, exang, oldpeak, slope, ca, thal]
-        loaded_model = pickle.load(open(r"ml_models/alzheimer.model", "rb"))
-        user_data = np.array(
-            (age,
-             sex,
-             cp,
-             trestbps,
-             chol,
-             fbs,
-             restecg,
-             thalach,
-             exang,
-             oldpeak,
-             slope,
-             ca,
-             thal)
-        ).reshape(1, 13)
-
-        rf = RandomForestClassifier(
-            n_estimators=16,
-            criterion='entropy',
-            max_depth=9
-        )
-
-        rf.fit(np.nan_to_num(X), Y)
-        rf.score(np.nan_to_num(X), Y)
-        predictions = rf.predict(user_data)
-
-        result = None
-        if int(predictions[0]) == 1:
-            result = 'Have a heart attack'
-        elif int(predictions[0]) == 0:
-            result = "don't have a heart attack"
-
-        return result
-
-
+# class heartTestSerializer(serializers.ModelSerializer):
+#     user = serializers.PrimaryKeyRelatedField(
+#         default=serializers.CurrentUserDefault(),
+#         queryset=User.objects.all(), )
+#     patient_name = serializers.SerializerMethodField()
+#     class Meta :
+#         model = heartTest
+#         fields = '__all__'
+#     def get_patient_name(self,instance):
+#         return f"{instance.user.first_name} {instance.user.last_name}"
+#
+#     # def validate(self, data):
+#     #     age = data.get('age')
+#     #     sex = data.get('sex')
+#     #     cp = data.get('cp')
+#     #     trestbps = data.get('trestbps')
+#     #     chol = data.get('chol')
+#     #     fbs = data.get('fbs')
+#     #     restecg = data.get('restecg')
+#     #     thalach = data.get('thalach')
+#     #     exang = data.get('exang')
+#     #     oldpeak = data.get('oldpeak')
+#     #     slope = data.get('slope')
+#     #     ca = data.get('ca')
+#     #     thal = data.get('thal')
+#     #     if age < 0 or age > 100:
+#     #         raise serializers.ValidationError("age must be between 0 and 1.")
+#     #     if Age < 0 or Age > 100:
+#     #         raise serializers.ValidationError("Age must be between 0 and 100.")
+#     #     if EDUC < 0 or EDUC > 20:
+#     #         raise serializers.ValidationError("EDUC must be between 0 and 20.")
+#     #     if SES < 0 or SES > 100:
+#     #         raise serializers.ValidationError("SES must be between 0 and 10.")
+#     #     if MMSE < 0 or MMSE > 30:
+#     #         raise serializers.ValidationError("MMSE must be between 0 and 30.")
+#     #     if eTIV < 0 or eTIV > 30:
+#     #         raise serializers.ValidationError("eTIV must be between 0 and 30.")
+#     #     if nWBV < 0 or nWBV > 30:
+#     #         raise serializers.ValidationError("nWBV must be between 0 and 30.")
+#     #     if ASF < 0 or ASF > 100:
+#     #         raise serializers.ValidationError("ASF must be between 0 and 100.")
+#     #     return data
+#     def predict(self):
+#         data = self.validated_data
+#
+#         df = pd.read_csv(r'ml_models/Heart_train (1).csv')
+#         df["sex"] = df["sex"].map({"female": 1, "male": 0})
+#         df_date = df.values
+#         X = df_date[:, :-1]
+#         Y = df_date[:, -1:]
+#         value = ''
+#
+#
+#         age = data.get('age')
+#         sex = data.get('sex')
+#         cp = data.get('cp')
+#         trestbps = data.get('trestbps')
+#         chol = data.get('chol')
+#         fbs = data.get('fbs')
+#         restecg = data.get('restecg')
+#         thalach = data.get('thalach')
+#         exang = data.get('exang')
+#         oldpeak = data.get('oldpeak')
+#         slope = data.get('slope')
+#         ca = data.get('ca')
+#         thal = data.get('thal')
+#         all_data = [age, sex, cp, trestbps, chol, fbs,
+#                     restecg, thalach, exang, oldpeak, slope, ca, thal]
+#         loaded_model = pickle.load(open(r"ml_models/alzheimer.model", "rb"))
+#         user_data = np.array(
+#             (age,
+#              sex,
+#              cp,
+#              trestbps,
+#              chol,
+#              fbs,
+#              restecg,
+#              thalach,
+#              exang,
+#              oldpeak,
+#              slope,
+#              ca,
+#              thal)
+#         ).reshape(1, 13)
+#
+#         rf = RandomForestClassifier(
+#             n_estimators=16,
+#             criterion='entropy',
+#             max_depth=9
+#         )
+#
+#         rf.fit(np.nan_to_num(X), Y)
+#         rf.score(np.nan_to_num(X), Y)
+#         predictions = rf.predict(user_data)
+#
+#         result = None
+#         if int(predictions[0]) == 1:
+#             result = 'Have a heart attack'
+#         elif int(predictions[0]) == 0:
+#             result = "don't have a heart attack"
+#
+#         return result
+#
+#

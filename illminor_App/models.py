@@ -45,7 +45,7 @@ class bloodTest(models.Model):
     date = models.DateField(default=date.today , null=False)
     result = models.CharField(max_length=20 , null=True)
     def __str__(self):
-        return self.date
+        return str(self.date)
 
 class diabtesTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
@@ -61,7 +61,7 @@ class diabtesTest(models.Model):
     result = models.CharField(max_length=20, null=True)
 
     def __str__(self):
-        return self.date
+        return str(self.date)
 
 class parkinsonTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
@@ -92,12 +92,12 @@ class parkinsonTest(models.Model):
     result = models.CharField(max_length=20, null=True)
 
     def __str__(self):
-        return self.date
+        return str(self.date)
 
 class alzhimarTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    gender = models.IntegerField(max_length=15)
+    gender = models.IntegerField()
     Age = models.FloatField()
     EDUC = models.FloatField()
     SES = models.FloatField()
@@ -108,7 +108,7 @@ class alzhimarTest(models.Model):
     date = models.DateField(default=date.today , null=False)
     result = models.CharField(max_length=20, null=True)
     def __str__(self):
-        return self.date
+        return str(self.date)
 class heartTest(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -128,7 +128,7 @@ class heartTest(models.Model):
     date = models.DateField(default=date.today , null=False)
     result = models.CharField(max_length=20, null=True)
     def __str__(self):
-        return self.date
+        return str(self.date)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
