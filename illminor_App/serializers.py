@@ -125,7 +125,7 @@ class bloodTestSerializer(serializers.ModelSerializer):
         mcp = data.get('mcp')
         all_data = [age, bmi, glucouse, insuline, homa, leptin, adiponcetin, resistiin, mcp]
 
-        loaded_model = joblib.load(open("ml_models/bloodmodelRBF", 'rb'))
+        loaded_model = joblib.load(open("/home/IllAcc/illminor_backend/ml_models/bloodmodelRBF", 'rb'))
         clf = loaded_model.predict([all_data])
         result = None
         if clf[0] == 0:
