@@ -8,6 +8,7 @@ import pickle
 from sklearn.ensemble import RandomForestClassifier
 from django.db.models import Q
 from rest_framework.response import Response
+import os
 
 
 
@@ -126,6 +127,7 @@ class bloodTestSerializer(serializers.ModelSerializer):
         all_data = [age, bmi, glucouse, insuline, homa, leptin, adiponcetin, resistiin, mcp]
 
         loaded_model = joblib.load(open("/home/IllAcc/illminor_backend/ml_models/bloodmodelRBF", 'rb'))
+        print(os.getcwd())
         clf = loaded_model.predict([all_data])
         result = None
         if clf[0] == 0:
