@@ -18,8 +18,6 @@ from .permissons import *
 from rest_framework.permissions import IsAuthenticated
 # from rest_framework.parsers import MultiPartParser
 
-import pickle
-import joblib
 
 # Create your views here.
 
@@ -38,6 +36,7 @@ class CustomAuthToken(ObtainAuthToken):
             return Response({
                 'token': token.key,
                 'user_id': user.pk,
+                'user_name': user.username,
                 'email': user.email,
                 'is_doctor': doctor
             })
