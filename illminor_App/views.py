@@ -100,7 +100,7 @@ class USERS_viewSets(viewsets.ModelViewSet):
                 # instance = (instance_1, instance_2)
 
                 token = Token.objects.get(user=user).key
-                return Response({"token": token}, status=status.HTTP_201_CREATED)
+                return Response({"token": token , "user_id": user.id}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):

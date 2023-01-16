@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.backends import ModelBackend
 from django.conf import settings
@@ -18,7 +17,7 @@ gander_choices = [
 ]
 
 
-class USERS(models.Model) :
+class USERS(models.Model):
     user = models.OneToOneField(User,  primary_key= True,unique=True, on_delete=models.CASCADE )
     name = models.CharField(max_length=255, null= False)
     profile_picture = models.ImageField(upload_to='profile_images', default='profile_images/default.jpg', null=False)
@@ -31,7 +30,7 @@ class USERS(models.Model) :
         return f"{self.user.first_name} {self.user.last_name}"
 
 class bloodTest(models.Model):
-    id = models.AutoField(unique=True, primary_key=True ,auto_created=True )
+    id = models.AutoField(unique=True, primary_key=True, auto_created=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     age = models.IntegerField()
     bmi = models.FloatField()
@@ -58,6 +57,7 @@ class diabtesTest(models.Model):
     bmi = models.FloatField()
     dpf = models.FloatField()
     age = models.IntegerField()
+    date = models.DateField(default=date.today , null=False)
     result = models.CharField(max_length=20, null=True)
 
     def __str__(self):
