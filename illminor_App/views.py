@@ -213,3 +213,26 @@ class heartTest_ViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         return super().update(request, *args, **kwargs)
 
+class chestTest_ViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = chestTest.objects.all()
+    serializer_class = chestTestSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    # pagination_class = StandardResultsSetPagination
+    # filterset_fields = ['user__id','user__username', 'id', 'date', "result"]
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid() :
+            serializer.save()
+            # instance = serializer.save()
+            # result = serializer.predict()
+            # instance.result = result
+            # instance.save()
+            return Response({"response": result}, status=status.HTTP_201_CREATED)
+            # return Response(chestTestSerializer.data.update(result=result), status=status.HTTP_201_CREATED)
+        else:
+            return Response({"response": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return super().update(request, *args, **kwargs)

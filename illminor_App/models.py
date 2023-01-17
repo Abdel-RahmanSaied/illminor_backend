@@ -127,6 +127,25 @@ class heartTest(models.Model):
         return str(self.date)
 
 
+# class chestTest(models.Model):
+#     id = models.AutoField(unique=True, primary_key=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     chest_pic = models.ImageField(null=False, upload_to='chest_image')
+#     date = models.DateField(default=date.today , null=False)
+#     result = models.CharField(max_length=20, null=True)
+#     def __str__(self):
+#         return str(self.date)
+
+class chestTest(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(default=date.today , null=False)
+    result = models.CharField(max_length=20, null=True)
+    def __str__(self):
+        return str(self.date)
+
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
