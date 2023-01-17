@@ -220,18 +220,18 @@ class chestTest_ViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     # pagination_class = StandardResultsSetPagination
     # filterset_fields = ['user__id','user__username', 'id', 'date', "result"]
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid() :
-            serializer.save()
-            # instance = serializer.save()
-            # result = serializer.predict()
-            # instance.result = result
-            # instance.save()
-            return Response({"response": request.data["result"]}, status=status.HTTP_201_CREATED)
-            # return Response(chestTestSerializer.data.update(result=result), status=status.HTTP_201_CREATED)
-        else:
-            return Response({"response": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     if serializer.is_valid() :
+    #         serializer.save()
+    #         # instance = serializer.save()
+    #         # result = serializer.predict()
+    #         # instance.result = result
+    #         # instance.save()
+    #         return Response({"response": request.data["result"]}, status=status.HTTP_201_CREATED)
+    #         # return Response(chestTestSerializer.data.update(result=result), status=status.HTTP_201_CREATED)
+    #     else:
+    #         return Response({"response": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
         kwargs['partial'] = True
