@@ -228,7 +228,7 @@ class chestTest_ViewSet(viewsets.ModelViewSet):
             # result = serializer.predict()
             # instance.result = result
             # instance.save()
-            return Response({"response": result}, status=status.HTTP_201_CREATED)
+            return Response({"response": request.data["result"]}, status=status.HTTP_201_CREATED)
             # return Response(chestTestSerializer.data.update(result=result), status=status.HTTP_201_CREATED)
         else:
             return Response({"response": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
