@@ -63,7 +63,7 @@ class USERSSerializer(serializers.ModelSerializer):
         user_id = instance.user
         try :
             query_set = alzhimarTest.objects.filter(user=user_id).last()
-            query_set =query_set.result
+            query_set = query_set.result
         except :
             return None
         return str(query_set)
@@ -71,9 +71,10 @@ class USERSSerializer(serializers.ModelSerializer):
     def get_heartTest_model(self,instance):
         user_id = instance.user
         try :
-            query_set = heartTest.objects.get(user=user_id).filter(user=user_id).last()
-            query_set =query_set.result
-        except :
+            query_set = heartTest.objects.filter(user=user_id).last()
+            query_set = query_set.result
+        except Exception as e :
+            print(e)
             return None
         return str(query_set)
 
