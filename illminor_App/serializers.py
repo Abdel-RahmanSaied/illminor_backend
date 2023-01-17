@@ -81,7 +81,7 @@ class USERSSerializer(serializers.ModelSerializer):
     def get_chestTest_model(self,instance):
         user_id = instance.user
         try :
-            query_set = chestTest.objects.get(user=user_id).filter(user=user_id).last()
+            query_set = chestTest.objects.filter(user=user_id).last()
             query_set =query_set.result
         except :
             return None
